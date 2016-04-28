@@ -13,6 +13,9 @@ class Vertex:
         self.dist = float('Inf')    # Distance to source vertex
         self.heapIndex = None
 
+    def getName(self):
+        return self.name
+
     def getPrev(self):
         return self.prev
 
@@ -70,6 +73,12 @@ class Edge:
 
     def getCost(self):
         return self.cost
+
+    def getSrcName(self):
+        return self.scr.getName()
+
+    def getDestName(self):
+        return self.dest.getName()
 
     def setCost(self, cost):
         self.cost = cost

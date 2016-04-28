@@ -1,15 +1,19 @@
 import pygame
 from operator import sub
 import sys
+from pathplan import PathPlanner
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
+ENV_WIDTH = 800
+ENV_HEIGHT = 800
+RESOLUTION = ENV_WIDTH, ENV_HEIGHT
 
 
 pygame.init()
-disp = pygame.display.set_mode((800,800))
-disp.fill((100,186,100))
+screen = pygame.display.set_mode(RESOLUTION)
+screen.fill((100, 186, 100))
 pygame.display.set_caption('First One')
 
 
@@ -32,12 +36,12 @@ while True:
             else:
                 width_height = tuple(map(sub, end_pos, start_pos))
                 print width_height
-                pygame.draw.rect(disp, RED, start_pos + width_height)
+                pygame.draw.rect(screen, RED, start_pos + width_height)
                 pygame.display.update()
 
         elif event.type == pygame.KEYUP and event.key == pygame.K_RETURN:
             print event
-            pygame.draw.polygon(disp, RED, polygon_vertices)
+            pygame.draw.polygon(screen, RED, polygon_vertices)
             pygame.display.update()
             polygon_vertices[:] = []
 pygame.display.update()
