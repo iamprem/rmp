@@ -96,16 +96,20 @@ class Graph:
     def __init__(self):
         self.vertexMap = {}
 
-    def addUniEdge(self, src, dest, cost):
+    def addUniEdge(self, src, dest, cost, set_parent=False):
         u = self.getVertex(src, True)
         v = self.getVertex(dest, True)
         edge_uv = Edge(u, v, cost)
         u.addEdge(edge_uv)
+        if set_parent:
+            v.setPrev(u)
         return True
 
-    def removeUniEdge(self, src, dest):
+    def removeUniEdge(self, src, dest, remove_parent=True):
         u = self.getVertex(src)
         v = self.getVertex(dest)
+        if remove_parent and v.getPrev() == u:
+            v.setPrev(None)
         if u is not None and v is not None:
             for e in u.getAdjEdges():
                 if e.getDest() == v:

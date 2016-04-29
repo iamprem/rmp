@@ -86,7 +86,7 @@ class Visualizer:
         :param color:
         :return:
         """
-        pygame.draw.line(self.screen, color, start_pos, end_pos, 2)
+        pygame.draw.line(self.screen, color, start_pos, end_pos, 1)
         pygame.display.update()
 
     def draw_polygon(self, vertices, color=RED):

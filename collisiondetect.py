@@ -29,7 +29,9 @@ class CollisionDetector:
 
     def is_path_colliding(self, start_pos, end_pos, epsilon, theta, robot_vel):
         """
-        Check every step along the path is colliding with obstacle or not
+        Check every step along the path is colliding with obstacle or not.
+        Note: This uses Incremental Collision Checking, which is not very efficient.
+        TODO: Write Subdivision Collision Checking Algorithm if time permits
         :param start_pos: Initial position of robot
         :param end_pos: Final position of robot
         :param epsilon: Time period that the robot is applied with these control inputs
