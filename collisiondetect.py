@@ -14,21 +14,22 @@ class CollisionDetector:
     def __init__(self, obstacles):
         self.obstacles = obstacles
         self.obstacles_AABB = []
-        pass
 
     def is_point_colliding(self, point):
         """
         Uses Precomputed Axis Aligned Bounding Boxes to detect the collision on the given point
         :return: True if collision; otherwise False
         """
-        x, y = point
+        x, y, theta = point
         for obst in self.obstacles_AABB:
             if obst[0][0] <= x <= obst[2][0] and obst[0][1] <= y <= obst[2][1]:
                 return True
         return False
 
     def is_path_colliding(self, start_pos, end_pos, epsilon, theta, robot_vel):
+        # TODO Delete this method if not needed in future
         """
+        **DEPRECATED**
         Check every step along the path is colliding with obstacle or not.
         Note: This uses Incremental Collision Checking, which is not very efficient.
         TODO: Write Subdivision Collision Checking Algorithm if time permits

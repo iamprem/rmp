@@ -76,7 +76,16 @@ class Visualizer:
         """
         for vtx in tree.vertexMap.values():
             for edge in vtx.getAdjEdges():
-                self.draw_line(edge.getSrcName(), edge.getDestName())
+                self.draw_line(edge.getSrcName()[0:2], edge.getDestName()[0:2])
+        print 'plot_graph:: Done!'
+
+    def nh_plot_graph(self, tree):
+        for vtx in tree.vertexMap.values():
+            for edge in vtx.getAdjEdges():
+                path = edge.path
+                for i in range(len(path) - 1):
+                    self.draw_line(path[i][0:2], path[i+1][0:2])
+        print 'nh_plot_graph:: Done!'
 
     def draw_line(self, start_pos, end_pos, color=BLUE):
         """
@@ -86,7 +95,7 @@ class Visualizer:
         :param color:
         :return:
         """
-        pygame.draw.line(self.screen, color, start_pos, end_pos, 1)
+        pygame.draw.line(self.screen, color, start_pos, end_pos, 2)
         pygame.display.update()
 
     def draw_polygon(self, vertices, color=RED):

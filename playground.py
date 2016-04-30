@@ -5,7 +5,7 @@ from visualizer import Visualizer
 from collisiondetect import CollisionDetector
 
 # Initial Config
-q_init = (400, 400)
+q_init = (400, 400, 0.0)
 
 # Define and convert obstacles
 vizer = Visualizer()
@@ -15,10 +15,15 @@ obstcls_aabb = cd.compute_AABB()
 
 # Plan path using q_init and obstacles
 planner = PathPlanner(q_init, cd)
-rrt_tree = planner.build_rrtstar(K=10, epsilon=10)
+
+# Call algorithm
+# rrt_tree = planner.build_rrt(10000, epsilon=5)
+# rrt_tree = planner.build_rrtstar(K=10000, epsilon=5)
+rrt_tree = planner.nh_build_rrt(K=100, epsilon=40)
 
 
-vizer.plot_graph(rrt_tree)
+# vizer.plot_graph(rrt_tree)
+vizer.nh_plot_graph(rrt_tree)
 
 while True:
     for event in pygame.event.get():

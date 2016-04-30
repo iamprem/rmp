@@ -13,6 +13,10 @@ class Vertex:
         self.dist = float('Inf')    # Distance to source vertex
         self.heapIndex = None
 
+        # Motion Planning DataStructure. Ignore these for general graph implementation.
+        # self.bestCtrl = None     # Stores best control input that takes closer to q_rand
+        # self.ctrlsPath = {}     # Stores control input as key and list of points from src to dest as values
+
     def getName(self):
         return self.name
 
@@ -65,6 +69,10 @@ class Edge:
         self.dest = dest
         self.cost = cost
 
+        # Motion Planning DataStructure. Ignore these for general graph implementation.
+        self.ctrl = None    # Stores control from src that takes to dest which is closer to q_rand
+        self.path = {}      # Stores control input as key and list of points from src to dest as values
+
     def getDest(self):
         return self.dest
 
@@ -103,7 +111,7 @@ class Graph:
         u.addEdge(edge_uv)
         if set_parent:
             v.setPrev(u)
-        return True
+        return edge_uv
 
     def removeUniEdge(self, src, dest, remove_parent=True):
         u = self.getVertex(src)
@@ -118,7 +126,7 @@ class Graph:
         return False
 
     def addBiEdge(self, src, dest, cost):
-        return self.addUniEdge(src, dest, cost) and self.addUniEdge(dest, src, cost)
+        return self.addUniEdge(src, dest, cost), self.addUniEdge(dest, src, cost)
 
     def removeBiEdge(self, src, dest):
         return self.removeUniEdge(src, dest) and self.removeUniEdge(dest, src)
