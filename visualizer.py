@@ -87,7 +87,7 @@ class Visualizer:
                     self.draw_line(path[i][0:2], path[i+1][0:2])
         print 'nh_plot_graph:: Done!'
 
-    def draw_line(self, start_pos, end_pos, color=BLUE):
+    def draw_line(self, start_pos, end_pos, color=BLUE, line_width = 2):
         """
         Draws line between two co-ordinates (tuples). Tuples can also be in float.
         :param start_pos:
@@ -95,7 +95,7 @@ class Visualizer:
         :param color:
         :return:
         """
-        pygame.draw.line(self.screen, color, start_pos, end_pos, 2)
+        pygame.draw.line(self.screen, color, start_pos, end_pos, line_width)
         pygame.display.update()
 
     def draw_polygon(self, vertices, color=RED):
@@ -109,3 +109,10 @@ class Visualizer:
         pygame.draw.polygon(self.screen, color, vertices)
         pygame.display.update()
 
+    def trace_path(self, goal):
+        while goal.getPrev() is not None:
+            prev = goal.getPrev()
+            prev_point = prev.getName()[0:2]
+            goal_point = goal.getName()[0:2]
+            goal = prev
+            self.draw_line(prev_point, goal_point, self.RED, 3)
