@@ -41,6 +41,7 @@ class PathPlanner:
         return t
 
     def build_rrtstar(self, K=100, epsilon=1):
+        # TODO Fix gamma
         # Sampling-based algorithms for optimal motion planning by Sertac Karaman and Emilio Frazzoli
         d = 2  # d-dimension
         mu_Xfree = 800*800
@@ -58,7 +59,6 @@ class PathPlanner:
                 q_nearest, dist, _ = self.nearest_neighbour(q_rand, np.array(t.vertexMap.keys()))
                 q_new, ctrls_path = self.holonomic_extend(q_nearest, q_rand, epsilon)
                 if self.nh_obstacle_free(ctrls_path[1]) and t.getVertex(q_new) is None:
-                    # No Collision occurred, So back to outer loop
                     OBSTACLE_FREE = True
             Qs_near = self.k_nearest_neighbour(t, q_new, max_dist=20)
             # TODO control input to edge, Cost is distance between
@@ -74,7 +74,6 @@ class PathPlanner:
                 alt_cost = q_near_vtx.getDist() + edge_cost
                 if alt_cost < cost_min \
                         and self.nh_obstacle_free(self.holonomic_extend(q_near, q_new)[1][1]):
-                        # and self.obstacle_free(q_near_vtx.getName(), q_new, edge_cost/self.robot_vel):
                     q_min_vtx, cost_min = q_near_vtx, alt_cost
             edge_cost = self.euc_distance(q_min_vtx.getName(), q_new)
             t.addUniEdge(q_min_vtx.getName(), q_new, edge_cost, True)
@@ -87,7 +86,61 @@ class PathPlanner:
                 alt_cost = q_new_vtx.getDist() + edge_cost
                 if alt_cost < q_near_vtx.getDist() \
                         and self.nh_obstacle_free(self.holonomic_extend(q_new, q_near)[1][1]):
-                        # and self.obstacle_free(q_new, q_near, edge_cost/self.robot_vel):
+                    q_parent = q_near_vtx.getPrev()
+                    t.removeUniEdge(q_parent.getName(), q_near)
+                    t.addUniEdge(q_new, q_near, edge_cost, True)
+                    q_near_vtx.setDist(alt_cost)
+                    # TODO fix child dist
+        return t
+
+    def nh_build_rrtstar(self, K=100, epsilon=1):
+        # **UNDER CONSTRUCTION**
+        # TODO Fix gamma
+        # Sampling-based algorithms for optimal motion planning by Sertac Karaman and Emilio Frazzoli
+        d = 2  # d-dimension
+        mu_Xfree = 800*800
+        zeta_d = math.pi + math.pow(1, d)
+        gamma = 1 + math.pow(2 * (1 + 1./d), 1./d) * math.pow(mu_Xfree/zeta_d, 1./d)
+
+        t = Graph()
+        t.addVertex(self.q_init).setDist(0)
+        q_nearest = None
+        q_new = None
+        for k in range(K):
+            OBSTACLE_FREE = False
+            while not OBSTACLE_FREE:
+                q_rand = self.random_config(t)
+                q_nearest, dist, _ = self.nearest_neighbour(q_rand, np.array(t.vertexMap.keys()))
+                (u_s, u_p, q_new), ctrls_path = self.nh_steer(q_nearest, q_rand, epsilon)
+                if self.nh_obstacle_free(ctrls_path[(u_s, u_p)]) and t.getVertex(q_new) is None:
+                    OBSTACLE_FREE = True
+            Qs_near = self.k_nearest_neighbour(t, q_new, max_dist=20)
+            # TODO control input to edge, Cost is distance between
+            q_new_vtx = t.addVertex(q_new)
+            q_nearest_vtx = t.getVertex(q_nearest)
+            # edge_cost = self.euc_distance(q_new, q_nearest_vtx.getName())
+            edge_cost = epsilon
+            q_min_vtx, cost_min = q_nearest_vtx, q_nearest_vtx.getDist() + edge_cost
+
+            # Connect along minimum cost path
+            for q_near_vtx in Qs_near:
+                q_near = q_near_vtx.getName()
+                edge_cost = self.euc_distance(q_new, q_near_vtx.getName())
+                alt_cost = q_near_vtx.getDist() + edge_cost
+                if alt_cost < cost_min \
+                        and self.nh_obstacle_free(self.holonomic_extend(q_near, q_new)[1][1]):
+                    q_min_vtx, cost_min = q_near_vtx, alt_cost
+            edge_cost = self.euc_distance(q_min_vtx.getName(), q_new)
+            t.addUniEdge(q_min_vtx.getName(), q_new, edge_cost, True)
+            q_new_vtx.setDist(cost_min)
+
+            # Rewiring the Tree
+            for q_near_vtx in Qs_near:
+                q_near = q_near_vtx.getName()
+                edge_cost = self.euc_distance(q_new, q_near)
+                alt_cost = q_new_vtx.getDist() + edge_cost
+                if alt_cost < q_near_vtx.getDist() \
+                        and self.nh_obstacle_free(self.holonomic_extend(q_new, q_near)[1][1]):
                     q_parent = q_near_vtx.getPrev()
                     t.removeUniEdge(q_parent.getName(), q_near)
                     t.addUniEdge(q_new, q_near, edge_cost, True)
@@ -106,11 +159,8 @@ class PathPlanner:
                 q_rand = self.random_config(t)
                 q_nearest, dist, _ = self.nearest_neighbour(q_rand, np.array(t.vertexMap.keys()))
                 (u_s, u_p, q_new), ctrls_path = self.nh_steer(q_nearest, q_rand, epsilon)
-                # print u_s, u_p, q_new, ctrls_path
                 if self.nh_obstacle_free(ctrls_path[(u_s, u_p)]) and t.getVertex(q_new) is None:
-                    # No Collision occurred, So back to outer loop
                     OBSTACLE_FREE = True
-            # TODO control input to edge, Cost is distance between
             edge = t.addUniEdge(q_nearest, q_new, self.robot_vel * epsilon, True)
             edge.ctrl = (u_s, u_p)
             edge.path = ctrls_path[(u_s, u_p)]
@@ -125,6 +175,7 @@ class PathPlanner:
         :param epsilon:
         :return:
         """
+        L = 20.0  # Length between midpoints of front and rear axle of the car like robot
         u_speed, u_phi = [-1.0, 1.0], [-math.pi/4, 0, math.pi/4]
         controls = list(itertools.product(u_speed, u_phi))
         # euler = lambda t_i, q, u_s, u_p, L: (u_s*math.cos(q[2]), u_s*math.sin(q[2]), u_s/L*math.tan(u_p))
@@ -133,7 +184,7 @@ class PathPlanner:
         for ctrl in controls:
             q_new = q_nearest
             for t_i in range(epsilon):  # h is assumed to be 1 here for euler integration
-                q_new = tuple(map(add, q_new, self.euler(t_i, q_new, ctrl[0], ctrl[1], 20.0)))  # TODO Change L=1 here
+                q_new = tuple(map(add, q_new, self.euler(t_i, q_new, ctrl[0], ctrl[1], L)))
                 ctrls_path[ctrl].append(q_new)
             result.append((ctrl[0], ctrl[1], q_new))
         q_news = [x[2] for x in result]
@@ -171,7 +222,7 @@ class PathPlanner:
         # TODO Generalize it!
         while True:
             q_rand = random.uniform(0, 800), random.uniform(0, 800), random.uniform(-3.14, 3.14)
-            if t.getVertex(q_rand) is None: # and not self.cDetector.is_point_colliding(q_rand):
+            if t.getVertex(q_rand) is None:
                 return q_rand
             else:
                 print 'random_config:: q_rand exist in Tree/Graph. Picking another!'
@@ -209,11 +260,224 @@ class PathPlanner:
         """
         return (radian + np.pi) % (2 * np.pi) - np.pi
 
+    def rad_diff(self, rad1, rad2):
+        """
+        Returns difference in angle between rad1 and rad2 in counterclockwise direction as radians
+        :param rad1:
+        :param rad2:
+        :return:
+        """
+        rad1 = self.rad_wrap(rad1)
+        rad2 = self.rad_wrap(rad2)
+        if rad1 <= rad2:
+            return rad2 - rad1
+        else:
+            return 2 * np.pi - (rad1 - rad2)
+
     def k_nearest_neighbour(self, t, q, max_dist=50):
         q_tree = np.array(t.vertexMap.keys())
         dist = np.linalg.norm(q_tree - q, axis=1)
         knn_keys = q_tree[np.where(dist <= max_dist)]
         return [t.vertexMap[tuple(k)] for k in knn_keys]
 
+    def t2_maneuver(self, q_init, theta_goal):
+        """
+        Change q_init orientation to q_goal orientation by performing type 2 maneuvers
+        NOTE: One observation made while coding was, when the u_speed is high, the expected angle is getting skipped or
+        had to give huge approximation by rounding off. So I decided to do the maneuvers at very slow u_speed
+        :param q_init:
+        :param theta_goal:
+        :return:
+        """
+        # TODO wrap q_init theta, or expect circles in maneuvers.
+        del2_theta = self.rad_diff(q_init[2], theta_goal)
+        del_theta = del2_theta/2
 
+        L = 20.0  # Length between midpoints of front and rear axle of the car like robot
+        u_speed, u_phi = [-0.1, 0.1], [-math.pi/4, 0, math.pi/4]
 
+        q_new = q_init
+        TURN1_DONE =False
+        turn1_path = []
+        line_start = None
+        while not TURN1_DONE:
+            q_new = tuple(map(add, q_new, self.euler(1, q_new, u_speed[0], u_phi[0], L)))
+            turn1_path.append(q_new)
+            if round(q_new[2], 2) == round(q_init[2] + del_theta, 2) \
+                    or round(self.rad_wrap(q_new[2]), 2) == round(self.rad_wrap(q_init[2] + del_theta), 2):
+                TURN1_DONE = True
+                line_start = q_new[0], q_new[1], self.rad_wrap(q_new[2])
+
+        q_new = (q_init[0], q_init[1], theta_goal)
+        TURN2_DONE = False
+        turn2_path = []
+        line_goal = None
+        while not TURN2_DONE:
+            q_new = tuple(map(add, q_new, self.euler(1, q_new, u_speed[1], u_phi[0], L)))
+            turn2_path.append(q_new)
+            if round(q_new[2], 2) == round(q_init[2] + del_theta, 2)\
+                    or round(self.rad_wrap(q_new[2]), 2) == round(self.rad_wrap(q_init[2] + del_theta), 2):
+                TURN2_DONE = True
+                line_goal = q_new[0], q_new[1], self.rad_wrap(q_new[2])
+
+        q_new = line_start
+        LINE_DONE =False
+        line_path = []
+        while not LINE_DONE:
+            q_new = tuple(map(add, q_new, self.euler(1, q_new, u_speed[1], u_phi[1], L)))
+            line_path.append(q_new)
+            if round(q_new[0]) == round(line_goal[0])\
+                    and round(q_new[1]) == round(line_goal[1]):
+                    # and round(q_new[2], 1) == round(line_goal[2], 1):
+                LINE_DONE = True
+        return turn1_path, line_path, turn2_path[::-1]
+
+    def t1_maneuver(self, q_init, paral_dist=1, direction='Left'):
+        phi_max = math.pi/4
+        L = 20.0
+        u_speed = [-0.1, 0.1]
+        rho_min = L/np.tan(phi_max)
+        d = paral_dist
+        del_theta = math.acos(2*rho_min / (d + 2*rho_min))
+
+        cw_rot = np.array([[0, 1], [-1, 0]])
+        acw_rot = np.array([[0, -1], [1, 0]])
+        q_unit = np.array([math.cos(q_init[2]), math.sin(q_init[2])])
+        cw_q_unit = np.dot(cw_rot, q_unit)
+        acw_q_unit = np.dot(acw_rot, q_unit)
+        cw_point = d * cw_q_unit
+        cw_point = (cw_point[0] + q_init[0], cw_point[1] + q_init[1], q_init[2])
+        acw_point = d * acw_q_unit
+        acw_point = (acw_point[0] + q_init[0], acw_point[1] + q_init[1], q_init[2])
+
+        if direction == 'Left':
+            u_phi = [-math.pi/4, 0, math.pi/4]
+            q_goal = cw_point
+            turn_goal_theta = q_init[2] + del_theta
+        else:
+            u_phi = [math.pi/4, 0, -math.pi/4]
+            q_goal = acw_point
+            turn_goal_theta = q_init[2] - del_theta
+
+        q_new = q_init
+        TURN1_DONE =False
+        turn1_path = []
+        line_start = None
+        while not TURN1_DONE:
+            q_new = tuple(map(add, q_new, self.euler(1, q_new, u_speed[1], u_phi[2], L)))
+            turn1_path.append(q_new)
+            if round(q_new[2], 2) == round(turn_goal_theta, 2) \
+                    or round(self.rad_wrap(q_new[2]), 2) == round(self.rad_wrap(turn_goal_theta), 2):
+                TURN1_DONE = True
+                line_start = q_new[0], q_new[1], self.rad_wrap(q_new[2])
+
+        q_new = (q_goal[0], q_goal[1], q_init[2])
+        TURN2_DONE = False
+        turn2_path = []
+        line_goal = None
+        while not TURN2_DONE:
+            q_new = tuple(map(add, q_new, self.euler(1, q_new, u_speed[0], u_phi[0], L)))
+            turn2_path.append(q_new)
+            if round(q_new[2], 2) == round(turn_goal_theta, 2) \
+                or round(self.rad_wrap(q_new[2]), 2) == round(self.rad_wrap(turn_goal_theta), 2):
+                TURN2_DONE = True
+                line_goal = q_new[0], q_new[1], self.rad_wrap(q_new[2])
+
+        q_new = line_start
+        LINE_DONE =False
+        line_path = []
+        while not LINE_DONE:
+            q_new = tuple(map(add, q_new, self.euler(1, q_new, u_speed[0], u_phi[1], L)))
+            line_path.append(q_new)
+            if round(q_new[0]) == round(line_goal[0]) \
+                    and round(q_new[1]) == round(line_goal[1]):
+                    # and round(q_new[2], 1) == round(line_goal[2], 1):
+                LINE_DONE = True
+
+        turn2_path = turn2_path[::-1]
+        turn2_path.append((round(q_goal[0]), round(q_goal[1]), q_goal[2]))
+        return turn1_path, line_path, turn2_path
+
+    def is_forward(self, q_nearest, q_goal):
+        q_fwd, q_bwd = q_nearest, q_nearest
+        for t in range(10):
+            q_fwd = tuple(map(add, q_fwd, self.euler(t, q_fwd, 1.0, 0.0, 20.0)))
+            q_bwd = tuple(map(add, q_bwd, self.euler(t, q_bwd, -1.0, 0.0, 20.0)))
+        _, _, idx = self.nearest_neighbour(q_goal, np.array([q_fwd, q_bwd]))
+        if idx == 0:
+            return True
+        else:
+            return False
+
+    def is_left(self, q_init, q_goal):
+        cw_rot = np.array([[0, 1], [-1, 0]])
+        acw_rot = np.array([[0, -1], [1, 0]])
+        q_unit = np.array([math.cos(q_init[2]), math.sin(q_init[2])])
+        cw_q_unit, acw_q_unit = np.dot(cw_rot, q_unit), np.dot(acw_rot, q_unit)
+        cw_point, acw_point = 5 * cw_q_unit, 5 * acw_q_unit
+        cw_point = (cw_point[0] + q_init[0], cw_point[1] + q_init[1], q_init[2])
+        acw_point = (acw_point[0] + q_init[0], acw_point[1] + q_init[1], q_init[2])
+        _, _, idx = self.nearest_neighbour(q_goal, np.array([cw_point, acw_point]))
+        if idx == 0:
+            return True
+        else:
+            return False
+
+    def nh_reach_goal(self, q_nearest, q_goal):
+        t2_paths = self.t2_maneuver(q_nearest, q_goal[2])
+        for i in t2_paths:
+            if not self.nh_obstacle_free(i):
+                print "nh_reach_goal:: t2_maneuver path collides!"
+                return False
+
+        # March Forward/Backward to closest point
+        march_path = []
+        q_fwd = q_nearest[0], q_nearest[1], q_goal[2]
+        q_bwd = q_nearest[0], q_nearest[1], q_goal[2]
+        prev_dist = self.euc_distance(q_fwd, q_goal)
+        if self.is_forward(q_fwd, q_goal):
+            q_fwd = tuple(map(add, q_fwd, self.euler(1, q_fwd, 1.0, 0.0, 20.0)))
+            curr_dist = self.euc_distance(q_fwd, q_goal)
+            while curr_dist < prev_dist:
+                q_fwd = tuple(map(add, q_fwd, self.euler(1, q_fwd, 1.0, 0.0, 20.0)))
+                prev_dist = curr_dist
+                curr_dist = self.euc_distance(q_fwd, q_goal)
+                march_path.append(q_fwd)
+        else:
+            q_bwd = tuple(map(add, q_bwd, self.euler(1, q_bwd, -1.0, 0.0, 20.0)))
+            curr_dist = self.euc_distance(q_bwd, q_goal)
+            while curr_dist < prev_dist:
+                q_bwd = tuple(map(add, q_bwd, self.euler(1, q_bwd, -1.0, 0.0, 20.0)))
+                prev_dist = curr_dist
+                curr_dist = self.euc_distance(q_bwd, q_goal)
+                march_path.append(q_bwd)
+
+        march_path = march_path[:-1]
+        if not self.nh_obstacle_free(march_path):
+            print "nh_reach_goal:: march forward/backward path collides!"
+            return False
+
+        # Type1 Left or Right to reach goal
+        t1_paths = []
+        if self.is_left(march_path[-1], q_goal):
+            q_left = march_path[-1]
+            while not self.x_or_y_equal(q_left, q_goal):
+                t1_steps = self.t1_maneuver(q_left, paral_dist=1, direction='Left')
+                t1_paths.append(t1_steps)
+                q_left = t1_steps[2][-1]
+        else:
+            q_right = march_path[-1]
+            while not self.x_or_y_equal(q_right, q_goal):
+                t1_steps = self.t1_maneuver(q_right, paral_dist=1, direction='Right')
+                t1_paths.append(t1_steps)
+                q_right = t1_steps[2][-1]
+
+        return t2_paths, march_path, t1_paths
+
+    def x_or_y_equal(self, point1, point2):
+        point1 = np.round(np.array([point1[0], point1[1]]))
+        point2 = np.round(np.array([point2[0], point2[1]]))
+        if (point1 == point2).any():
+            return True
+        else:
+            return False

@@ -8,6 +8,7 @@ class Visualizer:
     BLACK = (0, 0, 0)
     RED = (255, 0, 0)
     BLUE = (0, 0, 255)
+    YELLOW = (255, 255, 0)
     ENV_WIDTH = 800
     ENV_HEIGHT = 800
     RESOLUTION = ENV_WIDTH, ENV_HEIGHT
@@ -116,3 +117,23 @@ class Visualizer:
             goal_point = goal.getName()[0:2]
             goal = prev
             self.draw_line(prev_point, goal_point, self.RED, 3)
+
+    def nh_trace_path(self, goal):
+        # Connect goal to nearest with straight line
+        # prev = goal.getPrev()
+        # prev_point = prev.getName()[0:2]
+        # goal_point = goal.getName()[0:2]
+        # self.draw_line(prev_point, goal_point, self.YELLOW, 3)
+        # goal = prev
+        while goal.getPrev() is not None:
+            prev = goal.getPrev()
+            for e in prev.getAdjEdges():
+                if e.getDest() == goal:
+                    path = e.path
+                    for i in range(len(path) - 1):
+                        self.draw_line(path[i][0:2], path[i+1][0:2], self.RED, 3)
+            goal = prev
+
+    def plot_points(self, points_list, color=YELLOW):
+        for i in range(len(points_list) - 1):
+            self.draw_line(points_list[i][0:2], points_list[i+1][0:2], color, 1)
