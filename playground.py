@@ -7,12 +7,12 @@ from visualizer import Visualizer
 from collisiondetect import CollisionDetector
 
 # Initial Config
-q_init = (400.0, 400.0, 0.0)
-q_goal = (750.0, 50.0, -2.15)
+q_init = (50.0, 700.0, 0.0)
+q_goal = (750.0, 200.0, -2.15)
 # Define and convert obstacles
 vizer = Visualizer()
-# obstcls = vizer.define_obstacles()
-obstcls = pickle.load(open('scene_01.pkl', 'rb'))
+obstcls = vizer.define_obstacles()
+# obstcls = pickle.load(open('scene_01.pkl', 'rb'))
 cd = CollisionDetector(obstcls)
 obstcls_aabb = cd.compute_AABB()
 
@@ -22,7 +22,7 @@ planner = PathPlanner(q_init, cd)
 # Call algorithm
 # rrt_tree = planner.build_rrt(10000, epsilon=5)
 # rrt_tree = planner.build_rrtstar(K=10000, epsilon=5)
-rrt_tree = planner.nh_build_rrt(K=500, epsilon=40)
+rrt_tree = planner.nh_build_rrt(K=50, epsilon=40)
 
 q_nearest, dist, _ = planner.nearest_neighbour(q_goal, np.array(rrt_tree.vertexMap.keys()))
 q_new, ctrls_path = planner.holonomic_extend(q_nearest, q_goal)

@@ -119,7 +119,7 @@ class PathPlanner:
             q_new_vtx = t.addVertex(q_new)
             q_nearest_vtx = t.getVertex(q_nearest)
             # edge_cost = self.euc_distance(q_new, q_nearest_vtx.getName())
-            edge_cost = epsilon
+            edge_cost = epsilon * 1.0
             q_min_vtx, cost_min = q_nearest_vtx, q_nearest_vtx.getDist() + edge_cost
 
             # Connect along minimum cost path
@@ -321,15 +321,10 @@ class PathPlanner:
                 line_goal = q_new[0], q_new[1], self.rad_wrap(q_new[2])
 
         q_new = line_start
-        LINE_DONE =False
         line_path = []
-        while not LINE_DONE:
-            q_new = tuple(map(add, q_new, self.euler(1, q_new, u_speed[1], u_phi[1], L)))
+        for t in range(int(self.euc_distance(line_start, line_goal))):
+            q_new = tuple(map(add, q_new, self.euler(t, q_new, 1.0, u_phi[1], L)))
             line_path.append(q_new)
-            if round(q_new[0]) == round(line_goal[0])\
-                    and round(q_new[1]) == round(line_goal[1]):
-                    # and round(q_new[2], 1) == round(line_goal[2], 1):
-                LINE_DONE = True
         return turn1_path, line_path, turn2_path[::-1]
 
     def t1_maneuver(self, q_init, paral_dist=1, direction='Left'):
@@ -384,16 +379,10 @@ class PathPlanner:
                 line_goal = q_new[0], q_new[1], self.rad_wrap(q_new[2])
 
         q_new = line_start
-        LINE_DONE =False
         line_path = []
-        while not LINE_DONE:
-            q_new = tuple(map(add, q_new, self.euler(1, q_new, u_speed[0], u_phi[1], L)))
+        for t in range(int(self.euc_distance(line_start, line_goal))):
+            q_new = tuple(map(add, q_new, self.euler(t, q_new, -1.0, u_phi[1], L)))
             line_path.append(q_new)
-            if round(q_new[0]) == round(line_goal[0]) \
-                    and round(q_new[1]) == round(line_goal[1]):
-                    # and round(q_new[2], 1) == round(line_goal[2], 1):
-                LINE_DONE = True
-
         turn2_path = turn2_path[::-1]
         turn2_path.append((round(q_goal[0]), round(q_goal[1]), q_goal[2]))
         return turn1_path, line_path, turn2_path
@@ -434,9 +423,11 @@ class PathPlanner:
         march_path = []
         q_fwd = q_nearest[0], q_nearest[1], q_goal[2]
         q_bwd = q_nearest[0], q_nearest[1], q_goal[2]
+        march_path.append(q_fwd)
         prev_dist = self.euc_distance(q_fwd, q_goal)
         if self.is_forward(q_fwd, q_goal):
             q_fwd = tuple(map(add, q_fwd, self.euler(1, q_fwd, 1.0, 0.0, 20.0)))
+            march_path.append(q_fwd)
             curr_dist = self.euc_distance(q_fwd, q_goal)
             while curr_dist < prev_dist:
                 q_fwd = tuple(map(add, q_fwd, self.euler(1, q_fwd, 1.0, 0.0, 20.0)))
@@ -445,6 +436,7 @@ class PathPlanner:
                 march_path.append(q_fwd)
         else:
             q_bwd = tuple(map(add, q_bwd, self.euler(1, q_bwd, -1.0, 0.0, 20.0)))
+            march_path.append(q_bwd)
             curr_dist = self.euc_distance(q_bwd, q_goal)
             while curr_dist < prev_dist:
                 q_bwd = tuple(map(add, q_bwd, self.euler(1, q_bwd, -1.0, 0.0, 20.0)))
@@ -459,16 +451,17 @@ class PathPlanner:
 
         # Type1 Left or Right to reach goal
         t1_paths = []
+        paral_dist = self.euc_distance(march_path[-1], q_goal)
         if self.is_left(march_path[-1], q_goal):
             q_left = march_path[-1]
             while not self.x_or_y_equal(q_left, q_goal):
-                t1_steps = self.t1_maneuver(q_left, paral_dist=1, direction='Left')
+                t1_steps = self.t1_maneuver(q_left, paral_dist, direction='Left')
                 t1_paths.append(t1_steps)
                 q_left = t1_steps[2][-1]
         else:
             q_right = march_path[-1]
             while not self.x_or_y_equal(q_right, q_goal):
-                t1_steps = self.t1_maneuver(q_right, paral_dist=1, direction='Right')
+                t1_steps = self.t1_maneuver(q_right, paral_dist, direction='Right')
                 t1_paths.append(t1_steps)
                 q_right = t1_steps[2][-1]
 
