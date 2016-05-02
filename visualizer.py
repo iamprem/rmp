@@ -1,4 +1,5 @@
 from operator import sub
+from collections import deque
 import pygame
 
 
@@ -9,6 +10,10 @@ class Visualizer:
     RED = (255, 0, 0)
     BLUE = (0, 0, 255)
     YELLOW = (255, 255, 0)
+    PINK = (255, 192, 203)
+    CYAN = (0, 255, 255)
+    GREEN = (34, 139, 34)
+    BROWN = (165, 42, 42)
     ENV_WIDTH = 800
     ENV_HEIGHT = 800
     RESOLUTION = ENV_WIDTH, ENV_HEIGHT
@@ -18,6 +23,11 @@ class Visualizer:
         self.screen = pygame.display.set_mode(self.RESOLUTION)
         self.screen.fill((100, 186, 100))
         pygame.display.set_caption('Visualizer')
+        pygame.display.update()
+
+    def draw_square(self, point, size=10, color=GREEN):
+        pygame.draw.rect(self.screen, color, (int(point[0]), int(point[1]), size, size))
+        pygame.display.update()
 
     def define_obstacles(self):
         """
@@ -26,7 +36,6 @@ class Visualizer:
         :return:
         """
         OBSTACLE_DEFINED = False
-        self.screen.fill((100, 186, 100))
         pygame.display.set_caption('Define Obstacles')
         pygame.display.update()
         obstacles = []
@@ -69,20 +78,26 @@ class Visualizer:
                     poly_vertices = []
         return obstacles
 
-    def plot_graph(self, tree):
+    def plot_graph(self, tree, src):
         """
         Draw a Tree/Graph on pygame screen based on the graph/tree connectivity
         :param tree:
         :return:
         """
-        for vtx in tree.vertexMap.values():
+        node_list = deque([tree.getVertex(src)])
+        while len(node_list):
+            vtx = node_list.popleft()
             for edge in vtx.getAdjEdges():
+                node_list.append(edge.getDest())
                 self.draw_line(edge.getSrcName()[0:2], edge.getDestName()[0:2])
         print 'plot_graph:: Done!'
 
-    def nh_plot_graph(self, tree):
-        for vtx in tree.vertexMap.values():
+    def nh_plot_graph(self, tree, src):
+        node_list = deque([tree.getVertex(src)])
+        while len(node_list):
+            vtx = node_list.popleft()
             for edge in vtx.getAdjEdges():
+                node_list.append(edge.getDest())
                 path = edge.path
                 for i in range(len(path) - 1):
                     self.draw_line(path[i][0:2], path[i+1][0:2])
@@ -134,6 +149,6 @@ class Visualizer:
                         self.draw_line(path[i][0:2], path[i+1][0:2], self.RED, 3)
             goal = prev
 
-    def plot_points(self, points_list, color=YELLOW):
+    def plot_points(self, points_list, color=YELLOW, line_width=1):
         for i in range(len(points_list) - 1):
-            self.draw_line(points_list[i][0:2], points_list[i+1][0:2], color, 1)
+            self.draw_line(points_list[i][0:2], points_list[i+1][0:2], color, line_width)

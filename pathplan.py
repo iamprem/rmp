@@ -90,7 +90,10 @@ class PathPlanner:
                     t.removeUniEdge(q_parent.getName(), q_near)
                     t.addUniEdge(q_new, q_near, edge_cost, True)
                     q_near_vtx.setDist(alt_cost)
-                    # TODO fix child dist
+                    # Fix child dist
+                    # for child_edge in q_near_vtx.getAdjEdges():
+                    #     child = child_edge.getDest()
+                    #     child.setDist(q_near_vtx.getDist() + child_edge.getCost())
         return t
 
     def nh_build_rrtstar(self, K=100, epsilon=1):
@@ -159,7 +162,9 @@ class PathPlanner:
                 q_rand = self.random_config(t)
                 q_nearest, dist, _ = self.nearest_neighbour(q_rand, np.array(t.vertexMap.keys()))
                 (u_s, u_p, q_new), ctrls_path = self.nh_steer(q_nearest, q_rand, epsilon)
-                if self.nh_obstacle_free(ctrls_path[(u_s, u_p)]) and t.getVertex(q_new) is None:
+                if self.within_boundary(q_new) \
+                        and self.nh_obstacle_free(ctrls_path[(u_s, u_p)]) \
+                        and t.getVertex(q_new) is None:
                     OBSTACLE_FREE = True
             edge = t.addUniEdge(q_nearest, q_new, self.robot_vel * epsilon, True)
             edge.ctrl = (u_s, u_p)
@@ -246,6 +251,12 @@ class PathPlanner:
                 print "obstacle_free:: path/point collides!"
                 return False
         return True
+
+    def within_boundary(self, point):
+        if 0 <= point[0] < 800 and 0 <= point[1] < 800:
+            return True
+        else:
+            return False
 
     def euc_distance(self, start_pos, end_pos):
         return np.linalg.norm(np.array(start_pos) - np.array(end_pos))
@@ -464,7 +475,11 @@ class PathPlanner:
                 t1_steps = self.t1_maneuver(q_right, paral_dist, direction='Right')
                 t1_paths.append(t1_steps)
                 q_right = t1_steps[2][-1]
-
+        for tup in t1_paths:
+            for i in tup:
+                if not self.nh_obstacle_free(i):
+                    print "nh_reach_goal:: t1_maneuver path collides!"
+                    return False
         return t2_paths, march_path, t1_paths
 
     def x_or_y_equal(self, point1, point2):
