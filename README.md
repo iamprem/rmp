@@ -2,13 +2,13 @@
 
 ## Table of Contents
  - [Introduction](#introduction)
- - [Robot Description](#robot-description)
+ - [Model Description](#model-description)
  - [Path Planning Techniques](#path-planning-techniques)
     - [RRT](#rrt)
     - [RRT\*](#rrt-star)
     - [Type 1 and Type 2 maneuvers](#maneuvers)
     - [Collision Detection](#collision-detection)
- - [Demo](#demo)
+ - [Results](#results)
     - [Holonomic Robot](#non-holonomic-demo)
     - [Non-Holonomic Robot](#holonomic-demo)
  - [Evaluation](#evaluation)
@@ -41,3 +41,17 @@ Collision Detection: Axis Aligned Bounding Boxes(Implemented)
 
 
 ## Path Planning Techniques
+
+### RRT
+ 
+### RRT*
+
+### Type 1 and Type 2 Maneuvers
+
+### Axis Aligned Bounding Box
+
+## Results
+
+### Holonomic Robot
+
+### Non-Holonomic Robot
