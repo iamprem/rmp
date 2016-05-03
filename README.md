@@ -9,13 +9,9 @@
     - [RRT](#rrt)
     - [RRT\*](#rrt-star)
     - [Type 1 and Type 2 maneuvers](#maneuvers)
-    - [Collision Detection](#collision-detection)
  - [Results](#results)
     - [Holonomic Robot](#non-holonomic-demo)
     - [Non-Holonomic Robot](#holonomic-demo)
- - [Evaluation](#evaluation)
- - [Installation](#installation)
- - [Execution Instruction](#execution-instruction)
  - [Source Code](#source-code)
  - [References](#references)
  
@@ -63,13 +59,15 @@ The collision detection method that I implemented and used to check
 ### Type 1 and Type 2 Maneuvers
 Type 1: This maneuver is to take the robot from a configuration to another
 configuration without changing the orientation(Like parallel parking). 
+
 ![Type 1](images/type_1.png)
 
 
 Type 2: This maneuver is to bring a robot from some orientation to a
 desired orientation in-place(Like a three-point turn)
-![Type 2](images/type_2.png)
 
+![Type 2](images/type_2.png)
+***Images Source: Class Lectures***
 
 There was a third type of movement is implemented to connect these two
 maneuvers to reach the goal exactly. First, type 2 maneuver is done to 
@@ -78,10 +76,20 @@ finds a point that is exactly parallel to the goal configuration, then
 type 1 maneuver is done to reach the goal configuration. Below GIF shows
 type 1, type 2 and marching in cyan, brown and yellow colors respectively
 from the simulation.
+
 ![Maneuvers](images/maneuver_gif.gif)
 
 ## Results
 
 ### Holonomic Robot
 
+
 ### Non-Holonomic Robot
+
+
+## References
+
+ 1. Karaman, Sertac, and Emilio Frazzoli. "Incremental sampling-based algorithms for optimal motion planning." arXiv preprint arXiv:1005.0416 (2010).
+ 2. Karaman, Sertac, and Emilio Frazzoli. "Sampling-based algorithms for optimal motion planning." The International Journal of Robotics Research 30.7 (2011): 846-894.
+ 3. Karaman, Sertac, and Emilio Frazzoli. "Optimal kinodynamic motion planning using incremental sampling-based methods." Decision and Control (CDC), 2010 49th IEEE Conference on. IEEE, 2010.
+ 4. Karaman, Sertac, and Emilio Frazzoli. "Sampling-based optimal motion planning for non-holonomic dynamical systems." Robotics and Automation (ICRA), 2013 IEEE International Conference on. IEEE, 2013.

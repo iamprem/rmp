@@ -6,17 +6,17 @@ import time
 from pathplan import PathPlanner
 from visualizer import Visualizer
 from collisiondetect import CollisionDetector
-
+sys.setrecursionlimit(5000)
 # Initial Config
-q_init = (50.0, 700.0, 0.0)
-q_goal = (250.0, 750.0, -2.15)
+q_init = (100.0, 500.0, 0.0)
+q_goal = (700.0, 500.0, -2.15)
 
 # Define and convert obstacles
 vizer = Visualizer()
 vizer.draw_square(q_init)
 vizer.draw_square(q_goal, color=vizer.RED)
-obstcls = vizer.define_obstacles()
-# obstcls = pickle.load(open('scene_01.pkl', 'rb'))
+# obstcls = vizer.define_obstacles()
+obstcls = pickle.load(open('scene_01.pkl', 'rb'))
 cd = CollisionDetector(obstcls)
 obstcls_aabb = cd.compute_AABB()
 
@@ -25,18 +25,29 @@ planner = PathPlanner(q_init, cd)
 
 start = time.time()
 # Call algorithm
-# rrt_tree = planner.build_rrt(10000, epsilon=10)
-# rrt_tree = planner.build_rrtstar(K=20000, epsilon=5)
+# rrt_tree = planner.build_rrt(10000, epsilon=5)
+rrt_tree = planner.build_rrtstar(K=10000, epsilon=5)
 # rrt_tree = planner.nh_build_rrt(K=5000, epsilon=40)
-rrt_tree = planner.nh_build_rrtstar(K=5000, epsilon=40)
+# rrt_tree = planner.nh_build_rrtstar(K=5000, epsilon=40)
 end = time.time()
 print('Time taken: %f' % (end - start))
 
-q_nearest, dist, _ = planner.nearest_neighbour(q_goal, np.array(rrt_tree.vertexMap.keys()))
-# q_goal_vtx = planner.reach_goal(rrt_tree, q_goal)
-# vizer.plot_graph(rrt_tree, q_init)
-# vizer.trace_path(q_goal_vtx)
+# Write Tree to File
+outfile = open('rrtstar_holo.pkl', 'wb')
+pickle.dump(rrt_tree, outfile, pickle.HIGHEST_PROTOCOL)
+outfile.close()
 
+# rrt_tree = pickle.load(open('rrt_holo.pkl', 'rb'))
+
+
+# Holonomic
+q_nearest, dist, _ = planner.nearest_neighbour(q_goal, np.array(rrt_tree.vertexMap.keys()))
+q_goal_vtx = planner.reach_goal(rrt_tree, q_goal)
+vizer.plot_graph(rrt_tree, q_init)
+vizer.trace_path(q_goal_vtx)
+
+# Non Holonomic
+"""
 vizer.nh_plot_graph(rrt_tree, q_init)
 vizer.nh_trace_path(rrt_tree.getVertex(q_nearest))
 

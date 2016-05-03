@@ -508,7 +508,7 @@ class PathPlanner:
         q_nearest, dist, _ = self.nearest_neighbour(q_goal, np.array(t.vertexMap.keys()))
         q_new, ctrls_path = self.holonomic_extend(q_nearest, q_goal)
         if self.nh_obstacle_free(ctrls_path[1]) and t.getVertex(q_goal) is None:
-            self.addUniEdge(q_nearest, q_goal, 1.0 * len(ctrls_path), True)
+            t.addUniEdge(q_nearest, q_goal, 1.0 * len(ctrls_path), True)
         else:
             print 'Path to goal collides. Try more samples'
             sys.exit()
