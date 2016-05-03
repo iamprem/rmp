@@ -27,8 +27,8 @@ start = time.time()
 # Call algorithm
 # rrt_tree = planner.build_rrt(10000, epsilon=5)
 # rrt_tree = planner.build_rrtstar(K=10000, epsilon=5)
-# rrt_tree = planner.nh_build_rrt(K=5000, epsilon=40)
-# rrt_tree = planner.nh_build_rrtstar(K=5000, epsilon=40)
+# rrt_tree = planner.nh_build_rrt(K=1000, epsilon=40)
+# rrt_tree = planner.nh_build_rrtstar(K=1000, epsilon=40)
 end = time.time()
 print('Time taken: %f' % (end - start))
 
@@ -42,12 +42,12 @@ rrt_tree = pickle.load(open('rrt_nonholo.pkl', 'rb'))
 
 # Holonomic
 q_nearest, dist, _ = planner.nearest_neighbour(q_goal, np.array(rrt_tree.vertexMap.keys()))
-q_goal_vtx = planner.reach_goal(rrt_tree, q_goal)
-vizer.plot_graph(rrt_tree, q_init)
-vizer.trace_path(q_goal_vtx)
+# q_goal_vtx = planner.reach_goal(rrt_tree, q_goal)
+# vizer.plot_graph(rrt_tree, q_init)
+# vizer.trace_path(q_goal_vtx)
 
 # Non Holonomic
-"""
+# """
 vizer.nh_plot_graph(rrt_tree, q_init)
 vizer.nh_trace_path(rrt_tree.getVertex(q_nearest))
 
