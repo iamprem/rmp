@@ -107,6 +107,12 @@ in multiple places.
 
 ![RRT Star Non Holonomic](https://raw.githubusercontent.com/iamprem/temp/master/assets/rrtstar_nonholo.png)
 
+## Future Work
+ 
+ - Improve Collision detection to more accurate methods and define the car as a polygon instead of point.
+ - Type 1 and Type 2 maneuvers should be optimized to reduce number of intermediate steps
+ - Implement bidirectional RRTs
+ 
 ## References
 
  1. Karaman, Sertac, and Emilio Frazzoli. "Incremental sampling-based algorithms for optimal motion planning." arXiv preprint arXiv:1005.0416 (2010).
