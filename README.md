@@ -84,7 +84,11 @@ from the simulation.
 
 ### Holonomic Robot
 
+#### RRT with 10000 random samples 
+
 ![RRT Holonomic](images/rrt_holo.gif)
+
+#### RRT* with 10000 random samples
 
 ![RRT Star Holonomic](images/rrtstar_holo.gif)
 
