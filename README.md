@@ -84,9 +84,9 @@ from the simulation.
 
 ### Holonomic Robot
 
-![RRT Holonomic](images/rrt_holo_.gif)
+![RRT Holonomic](images/rrt_holo.gif)
 
-![RRT Star Holonomic](images/rrtstar_holo_.gif)
+![RRT Star Holonomic](images/rrtstar_holo.gif)
 
 ### Non-Holonomic Robot
 
