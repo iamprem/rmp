@@ -60,13 +60,13 @@ The collision detection method that I implemented and used to check
 Type 1: This maneuver is to take the robot from a configuration to another
 configuration without changing the orientation(Like parallel parking). 
 
-![Type 1](images/type_1.png)
+![Type 1](https://raw.githubusercontent.com/iamprem/temp/master/assets/type_1.png)
 
 
 Type 2: This maneuver is to bring a robot from some orientation to a
 desired orientation in-place(Like a three-point turn)
 
-![Type 2](images/type_2.png)
+![Type 2](https://raw.githubusercontent.com/iamprem/temp/master/assets/type_2.png)
 
 ***Images Source: Class Lectures***
 
