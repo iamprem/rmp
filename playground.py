@@ -26,18 +26,18 @@ planner = PathPlanner(q_init, cd)
 start = time.time()
 # Call algorithm
 # rrt_tree = planner.build_rrt(10000, epsilon=5)
-rrt_tree = planner.build_rrtstar(K=10000, epsilon=5)
+# rrt_tree = planner.build_rrtstar(K=10000, epsilon=5)
 # rrt_tree = planner.nh_build_rrt(K=5000, epsilon=40)
 # rrt_tree = planner.nh_build_rrtstar(K=5000, epsilon=40)
 end = time.time()
 print('Time taken: %f' % (end - start))
 
 # Write Tree to File
-outfile = open('rrtstar_holo.pkl', 'wb')
-pickle.dump(rrt_tree, outfile, pickle.HIGHEST_PROTOCOL)
-outfile.close()
+# outfile = open('rrtstar_nonholo.pkl', 'wb')
+# pickle.dump(rrt_tree, outfile, pickle.HIGHEST_PROTOCOL)
+# outfile.close()
 
-# rrt_tree = pickle.load(open('rrt_holo.pkl', 'rb'))
+rrt_tree = pickle.load(open('rrt_nonholo.pkl', 'rb'))
 
 
 # Holonomic

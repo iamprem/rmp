@@ -67,6 +67,7 @@ Type 2: This maneuver is to bring a robot from some orientation to a
 desired orientation in-place(Like a three-point turn)
 
 ![Type 2](images/type_2.png)
+
 ***Images Source: Class Lectures***
 
 There was a third type of movement is implemented to connect these two
@@ -83,6 +84,9 @@ from the simulation.
 
 ### Holonomic Robot
 
+![RRT Holonomic](images/rrt_holo_.gif)
+
+![RRT Star Holonomic](images/rrtstar_holo_.gif)
 
 ### Non-Holonomic Robot
 
