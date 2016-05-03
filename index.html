@@ -118,8 +118,9 @@ configuration without changing the orientation(Like parallel parking). </p>
 <p>Type 2: This maneuver is to bring a robot from some orientation to a
 desired orientation in-place(Like a three-point turn)</p>
 
-<p><img src="images/type_2.png" alt="Type 2">
-<strong><em>Images Source: Class Lectures</em></strong></p>
+<p><img src="images/type_2.png" alt="Type 2"></p>
+
+<p><strong><em>Images Source: Class Lectures</em></strong></p>
 
 <p>There was a third type of movement is implemented to connect these two
 maneuvers to reach the goal exactly. First, type 2 maneuver is done to 
@@ -137,8 +138,33 @@ from the simulation.</p>
 <h3>
 <a id="holonomic-robot" class="anchor" href="#holonomic-robot" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Holonomic Robot</h3>
 
+<h4>
+<a id="rrt-with-10000-random-samples" class="anchor" href="#rrt-with-10000-random-samples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>RRT with 10000 random samples</h4>
+
+<p><img src="images/rrt_holo.gif" alt="RRT Holonomic"></p>
+
+<h4>
+<a id="rrt-with-10000-random-samples-1" class="anchor" href="#rrt-with-10000-random-samples-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>RRT* with 10000 random samples</h4>
+
+<p><img src="images/rrtstar_holo.gif" alt="RRT Star Holonomic"></p>
+
 <h3>
 <a id="non-holonomic-robot" class="anchor" href="#non-holonomic-robot" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Non-Holonomic Robot</h3>
+
+<p><strong><em>Yellow Lines near the goal(Red Square) represents the maneuvers performed to reach the goal as desired</em></strong></p>
+
+<h4>
+<a id="rrt-with-1000-random-samples" class="anchor" href="#rrt-with-1000-random-samples" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>RRT with 1000 random samples</h4>
+
+<p><img src="images/rrt_nonholo.png" alt="RRT Non Holonomic"></p>
+
+<h4>
+<a id="rrt-with-1000-random-samples-1" class="anchor" href="#rrt-with-1000-random-samples-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>RRT* with 1000 random samples</h4>
+
+<p>The below images shows rewiring step(by doing type1 and type2 maneuvers)
+in multiple places.</p>
+
+<p><img src="images/rrtstar_nonholo.png" alt="RRT Star Non Holonomic"></p>
 
 <h2>
 <a id="references" class="anchor" href="#references" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>References</h2>
