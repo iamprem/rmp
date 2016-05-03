@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Motion Planning - Reeds-Shepp Car by iamprem</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Motion Planning - Reeds-Shepp Car</h1>
+      <h2 class="project-tagline">By Sampling Based Methods(RRT &amp; RRT*)</h2>
+      <a href="https://github.com/iamprem/rmp" class="btn">View on GitHub</a>
+      <a href="https://github.com/iamprem/rmp/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/iamprem/rmp/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="path-planning-for-reeds-shepp-car" class="anchor" href="#path-planning-for-reeds-shepp-car" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Path Planning for Reeds-Shepp Car</h1>
+
+<h2>
+<a id="table-of-contents" class="anchor" href="#table-of-contents" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Table of Contents</h2>
+
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#model-description">Model Description</a></li>
+<li><a href="#limitations">Limitations</a></li>
+<li><a href="#collision-detection">Collision Detection</a></li>
+<li>
+<a href="#path-planning-techniques">Path Planning Techniques</a>
+
+<ul>
+<li><a href="#rrt">RRT</a></li>
+<li><a href="#rrt-star">RRT*</a></li>
+<li><a href="#maneuvers">Type 1 and Type 2 maneuvers</a></li>
+</ul>
+</li>
+<li>
+<a href="#results">Results</a>
+
+<ul>
+<li><a href="#non-holonomic-demo">Holonomic Robot</a></li>
+<li><a href="#holonomic-demo">Non-Holonomic Robot</a></li>
+</ul>
+</li>
+<li><a href="#source-code">Source Code</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+
+<h2>
+<a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Introduction</h2>
+
+<p>The goal of this project is to implement sampling based motion planning 
+algorithms such as Rapidly-Exploring Random Tree(RRT) and its variant RRT* for a 
+holonomic point robot and a Reeds-Shepp car like robot with 
+non-holonomic constraints.</p>
+
+<p>When I was implementing RRT* with non-holonomic constraints, I
+noticed that we need to be able to reach a nearby point(q_near) with its 
+orientation from the new configuration(q_new). This is mostly impossible to reach
+by just trying the six combination of inputs that a Reeds-Shepp Car can
+take. So I also implemented <strong><em>Type 1</em></strong> and <strong><em>Type 2</em></strong> maneuvers for a car like 
+robot to reach a desired configuration by doing combinations of these two
+maneuvers.</p>
+
+<h2>
+<a id="model-description" class="anchor" href="#model-description" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Model Description</h2>
+
+<ul>
+<li>Robot Model          :   Point Robot and Reeds-Shepp Car(Rigid Body)</li>
+<li>Type                             :   Holonomic and Non-Holonomic</li>
+<li>Workspace              :   2-D plane with Obstacles</li>
+<li>Collision Detection: Axis Aligned Bounding Boxes(Implemented)</li>
+</ul>
+
+<h2>
+<a id="limitations" class="anchor" href="#limitations" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Limitations</h2>
+
+<p>For the non-holonomic case, I'm still defining the robot as point
+because of my collision detection methods can only tell whether a point
+lies inside the obstacle or not. I didn't implement polygon-polygon 
+collision detection methods to facilitate this and also using
+existing libraries for collision detection even complicates my data structures.</p>
+
+<h2>
+<a id="collision-detection" class="anchor" href="#collision-detection" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Collision Detection</h2>
+
+<h3>
+<a id="axis-aligned-bounding-box" class="anchor" href="#axis-aligned-bounding-box" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Axis Aligned Bounding Box</h3>
+
+<p>The collision detection method that I implemented and used to check
+ collision for the below path planning techniques is Axis aligned 
+ bounding boxes. Here every obstacle in the environment is bounded by a 
+ rectangle of smallest possible size and checking the robot is inside the
+ rectangle while planning the path.</p>
+
+<h2>
+<a id="path-planning-techniques" class="anchor" href="#path-planning-techniques" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Path Planning Techniques</h2>
+
+<ul>
+<li>RRT</li>
+<li>RRT*</li>
+<li>Type 1 and Type 2 Maneuvers</li>
+</ul>
+
+<h3>
+<a id="type-1-and-type-2-maneuvers" class="anchor" href="#type-1-and-type-2-maneuvers" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Type 1 and Type 2 Maneuvers</h3>
+
+<p>Type 1: This maneuver is to take the robot from a configuration to another
+configuration without changing the orientation(Like parallel parking). </p>
+
+<p><img src="images/type_1.png" alt="Type 1"></p>
+
+<p>Type 2: This maneuver is to bring a robot from some orientation to a
+desired orientation in-place(Like a three-point turn)</p>
+
+<p><img src="images/type_2.png" alt="Type 2">
+<strong><em>Images Source: Class Lectures</em></strong></p>
+
+<p>There was a third type of movement is implemented to connect these two
+maneuvers to reach the goal exactly. First, type 2 maneuver is done to 
+change to desired orientation and then marching forward or backward till it 
+finds a point that is exactly parallel to the goal configuration, then 
+type 1 maneuver is done to reach the goal configuration. Below GIF shows
+type 1, type 2 and marching in cyan, brown and yellow colors respectively
+from the simulation.</p>
+
+<p><img src="images/maneuver_gif.gif" alt="Maneuvers"></p>
+
+<h2>
+<a id="results" class="anchor" href="#results" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Results</h2>
+
+<h3>
+<a id="holonomic-robot" class="anchor" href="#holonomic-robot" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Holonomic Robot</h3>
+
+<h3>
+<a id="non-holonomic-robot" class="anchor" href="#non-holonomic-robot" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Non-Holonomic Robot</h3>
+
+<h2>
+<a id="references" class="anchor" href="#references" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>References</h2>
+
+<ol>
+<li>Karaman, Sertac, and Emilio Frazzoli. "Incremental sampling-based algorithms for optimal motion planning." arXiv preprint arXiv:1005.0416 (2010).</li>
+<li>Karaman, Sertac, and Emilio Frazzoli. "Sampling-based algorithms for optimal motion planning." The International Journal of Robotics Research 30.7 (2011): 846-894.</li>
+<li>Karaman, Sertac, and Emilio Frazzoli. "Optimal kinodynamic motion planning using incremental sampling-based methods." Decision and Control (CDC), 2010 49th IEEE Conference on. IEEE, 2010.</li>
+<li>Karaman, Sertac, and Emilio Frazzoli. "Sampling-based optimal motion planning for non-holonomic dynamical systems." Robotics and Automation (ICRA), 2013 IEEE International Conference on. IEEE, 2013.</li>
+</ol>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/iamprem/rmp">Motion Planning - Reeds-Shepp Car</a> is maintained by <a href="https://github.com/iamprem">iamprem</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
