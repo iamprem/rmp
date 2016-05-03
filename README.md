@@ -78,7 +78,7 @@ type 1 maneuver is done to reach the goal configuration. Below GIF shows
 type 1, type 2 and marching in cyan, brown and yellow colors respectively
 from the simulation.
 
-![Maneuvers](images/maneuver_gif.gif)
+![Maneuvers](https://raw.githubusercontent.com/iamprem/temp/master/assets/maneuver_gif.gif)
 
 ## Results
 
@@ -86,11 +86,11 @@ from the simulation.
 
 #### RRT with 10000 random samples 
 
-![RRT Holonomic](images/rrt_holo.gif)
+![RRT Holonomic](https://raw.githubusercontent.com/iamprem/temp/master/assets/rrt_holo.gif)
 
 #### RRT* with 10000 random samples
 
-![RRT Star Holonomic](images/rrtstar_holo.gif)
+![RRT Star Holonomic](https://raw.githubusercontent.com/iamprem/temp/master/assets/rrtstar_holo.gif)
 
 ### Non-Holonomic Robot
 
@@ -98,14 +98,14 @@ from the simulation.
 
 #### RRT with 1000 random samples 
 
-![RRT Non Holonomic](images/rrt_nonholo.png)
+![RRT Non Holonomic](https://raw.githubusercontent.com/iamprem/temp/master/assets/rrt_nonholo.png)
 
 #### RRT* with 1000 random samples
 
 The below images shows rewiring step(by doing type1 and type2 maneuvers)
 in multiple places.
 
-![RRT Star Non Holonomic](images/rrtstar_nonholo.png)
+![RRT Star Non Holonomic](https://raw.githubusercontent.com/iamprem/temp/master/assets/rrtstar_nonholo.png)
 
 ## References
 
