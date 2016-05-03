@@ -59,13 +59,18 @@ The collision detection method that I implemented and used to check
  - RRT
  - RRT*
  - Type 1 and Type 2 Maneuvers
+ 
 ### Type 1 and Type 2 Maneuvers
 Type 1: This maneuver is to take the robot from a configuration to another
 configuration without changing the orientation(Like parallel parking). 
 ![Type 1](images/type_1.png)
+
+
 Type 2: This maneuver is to bring a robot from some orientation to a
 desired orientation in-place(Like a three-point turn)
 ![Type 2](images/type_2.png)
+
+
 There was a third type of movement is implemented to connect these two
 maneuvers to reach the goal exactly. First, type 2 maneuver is done to 
 change to desired orientation and then marching forward or backward till it 
