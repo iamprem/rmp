@@ -10,9 +10,14 @@
     - [RRT\*](#rrt-star)
     - [Type 1 and Type 2 maneuvers](#maneuvers)
  - [Results](#results)
-    - [Holonomic Robot](#non-holonomic-demo)
-    - [Non-Holonomic Robot](#holonomic-demo)
+    - [Holonomic Robot](#holonomic-robot)
+    - [Non-Holonomic Robot](#non-holonomic-robot)
+ - [Execution Instruction](#execution-instruction)
+    - [Dependencies](#dependencies)
+    - [Creating and Loading Scene](#creating-and-loading-scene)
+    - [Running Path Planning Methods](#running-path-planning-methods)
  - [Source Code](#source-code)
+ - [Future Work](#future-work)
  - [References](#references)
  
 ## Introduction
@@ -106,6 +111,106 @@ The below images shows rewiring step(by doing type1 and type2 maneuvers)
 in multiple places.
 
 ![RRT Star Non Holonomic](https://raw.githubusercontent.com/iamprem/temp/master/assets/rrtstar_nonholo.png)
+
+## Execution Instruction
+
+### Dependencies
+ 
+ - Python 2.7
+ - [Pygame](http://www.pygame.org/wiki/CompileUbuntu)
+ - Numpy
+ - Ubuntu 14.04 or 15.10
+ 
+#### To Install Numpy and Pygame on Ubuntu
+
+ ```bash
+ sudo apt-get install pip            # Install pip(python package manager)
+ sudo pip install -U numpy           # Install Numpy using pip
+ sudo apt-get install python-pygame  # Install Pygame using Ubuntu package manager
+ ```
+ 
+***Note: This program can also be run on Windows and Mac with appropriate pygame [installation](http://www.pygame.org/download.shtml)***
+
+### Creating and Loading Scene
+
+To create scene(2D-environment with obstacles), run the below command from terminal/command prompt.
+ 
+ ```bash
+ cd rmp                              # Navigate inside the project folder
+ python scene.py                     # Run scene definer
+ ```
+
+In the Screen resulted by running the above command, you can draw shapes by doing any of the following.
+ 1. Click and Drag to draw rectangles (like in MS Paint)
+ 2. Or Just **click on 3 or more places** on the screen to capture co-ordinates of the polygon and once done press **ENTER** to 
+ see the polygonal shape(Make sure that you don't drag the mouse while clicking).
+ 
+Once obstacles are defined, Close the window to save the scene to 'scene_01.pkl' file(will be located on the project root directory) 
+
+
+
+### Running Path Planning Methods
+
+Use ```playground.py``` located project root to test the program.
+
+#### To Define Initial and Goal configurations
+ 
+ ```python
+ playground.py : Line 11 and 12
+  q_init = (100.0, 500.0, 0.0)
+  q_goal = (700.0, 500.0, -2.15)
+ ```
+
+#### Choose Algorithm
+
+Uncomment a line and change parameters to run the required algorithm
+```python
+playground.py : Line 27-31
+# Call algorithm
+# rrt_tree = planner.build_rrt(10000, epsilon=5)
+# rrt_tree = planner.build_rrtstar(K=10000, epsilon=5)
+# rrt_tree = planner.nh_build_rrt(K=1000, epsilon=40)
+# rrt_tree = planner.nh_build_rrtstar(K=1000, epsilon=40)
+```
+***Warning: Non-Holonomic with K > 1000 might take longer time to produce result because of inefficient graph
+plotting***
+Once you uncommented the algorithm in this step, uncomment/comment the required plotting line to see the result.
+
+
+#### Holonomic Plot
+For Holonomic cases, Uncomment the below lines and comment the Lines (51-57) shown in the next step(Non-Holonomic Plot)
+
+```python
+playground.py : Line 45-47
+# q_goal_vtx = planner.reach_goal(rrt_tree, q_goal)
+# vizer.plot_graph(rrt_tree, q_init)
+# vizer.trace_path(q_goal_vtx)
+```
+
+
+
+#### Non-Holonomic Plot
+For Non-Holonomic Case, comment the three lines (45-47) and uncomment lines (51-57)
+
+```python
+playground.py : Lines 51-57
+vizer.nh_plot_graph(rrt_tree, q_init)
+vizer.nh_trace_path(rrt_tree.getVertex(q_nearest))
+
+a,b,c,d = planner.nh_reach_goal(q_nearest, q_goal)
+final_list = planner.append_t1_m_t2(a, b, c)
+# TODO final_list collision check
+vizer.plot_points(final_list, vizer.YELLOW, 3)
+```
+
+#### Start and Stop
+After selecting the appropriate lines from the above steps, 
+ - run ***```python playground.py```*** to start the program.
+ - Close the window to exit the program(Or Press CTRL + C on console to break)
+
+## Source Code
+
+[On Github](github.com/iamprem/rmp)
 
 ## Future Work
  
