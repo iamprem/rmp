@@ -151,29 +151,33 @@ Once obstacles are defined, Close the window to save the scene to 'scene_01.pkl'
 
 ### Running Path Planning Methods
 
-Use ```playground.py``` located project root to test the program.
+Use ```playground.py``` located in project root to test the program.
 
 #### To Define Initial and Goal configurations
- 
+ Change the ```q_init``` and ```q_goal``` at line 11 and 12 on playground.py. ```x,y and theta``` should be in the range ```(0-800), (0-800)
+ and (-3.14, 3.14)``` respectively.
  ```python
- playground.py : Line 11 and 12
-  q_init = (100.0, 500.0, 0.0)
-  q_goal = (700.0, 500.0, -2.15)
+ playground.py : Line 11-12
+    
+    q_init = (100.0, 500.0, 0.0)
+    q_goal = (700.0, 500.0, -2.15)
  ```
 
 #### Choose Algorithm
 
-Uncomment a line and change parameters to run the required algorithm
+Uncomment any one line and change parameters to run the required algorithm.
 ```python
 playground.py : Line 27-31
-# Call algorithm
-# rrt_tree = planner.build_rrt(10000, epsilon=5)
-# rrt_tree = planner.build_rrtstar(K=10000, epsilon=5)
-# rrt_tree = planner.nh_build_rrt(K=1000, epsilon=40)
-# rrt_tree = planner.nh_build_rrtstar(K=1000, epsilon=40)
+   
+   # Call algorithm
+   # rrt_tree = planner.build_rrt(10000, epsilon=5)
+   # rrt_tree = planner.build_rrtstar(K=10000, epsilon=5)
+   # rrt_tree = planner.nh_build_rrt(K=1000, epsilon=40)
+   # rrt_tree = planner.nh_build_rrtstar(K=1000, epsilon=40)
 ```
-***Warning: Non-Holonomic with K > 1000 might take longer time to produce result because of inefficient graph
+***Warning: Non-Holonomic cases with K > 1000 might take longer time to produce result because of inefficient graph
 plotting***
+
 Once you uncommented the algorithm in this step, uncomment/comment the required plotting line to see the result.
 
 
@@ -182,9 +186,10 @@ For Holonomic cases, Uncomment the below lines and comment the Lines (51-57) sho
 
 ```python
 playground.py : Line 45-47
-# q_goal_vtx = planner.reach_goal(rrt_tree, q_goal)
-# vizer.plot_graph(rrt_tree, q_init)
-# vizer.trace_path(q_goal_vtx)
+
+   # q_goal_vtx = planner.reach_goal(rrt_tree, q_goal)
+   # vizer.plot_graph(rrt_tree, q_init)
+   # vizer.trace_path(q_goal_vtx)
 ```
 
 
@@ -194,23 +199,24 @@ For Non-Holonomic Case, comment the three lines (45-47) and uncomment lines (51-
 
 ```python
 playground.py : Lines 51-57
-vizer.nh_plot_graph(rrt_tree, q_init)
-vizer.nh_trace_path(rrt_tree.getVertex(q_nearest))
 
-a,b,c,d = planner.nh_reach_goal(q_nearest, q_goal)
-final_list = planner.append_t1_m_t2(a, b, c)
-# TODO final_list collision check
-vizer.plot_points(final_list, vizer.YELLOW, 3)
+   vizer.nh_plot_graph(rrt_tree, q_init)
+   vizer.nh_trace_path(rrt_tree.getVertex(q_nearest))
+   
+   a,b,c,d = planner.nh_reach_goal(q_nearest, q_goal)
+   final_list = planner.append_t1_m_t2(a, b, c)
+   # TODO final_list collision check
+   vizer.plot_points(final_list, vizer.YELLOW, 3)
 ```
 
 #### Start and Stop
 After selecting the appropriate lines from the above steps, 
  - run ***```python playground.py```*** to start the program.
- - Close the window to exit the program(Or Press CTRL + C on console to break)
+ - Close the window to exit the program once done(Or Press CTRL + C on console to break)
 
 ## Source Code
 
-[On Github](github.com/iamprem/rmp)
+[On Github](http://github.com/iamprem/rmp)
 
 ## Future Work
  
