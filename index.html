@@ -43,11 +43,21 @@
 <a href="#results">Results</a>
 
 <ul>
-<li><a href="#non-holonomic-demo">Holonomic Robot</a></li>
-<li><a href="#holonomic-demo">Non-Holonomic Robot</a></li>
+<li><a href="#holonomic-robot">Holonomic Robot</a></li>
+<li><a href="#non-holonomic-robot">Non-Holonomic Robot</a></li>
+</ul>
+</li>
+<li>
+<a href="#execution-instruction">Execution Instruction</a>
+
+<ul>
+<li><a href="#dependencies">Dependencies</a></li>
+<li><a href="#creating-and-loading-scene">Creating and Loading Scene</a></li>
+<li><a href="#running-path-planning-methods">Running Path Planning Methods</a></li>
 </ul>
 </li>
 <li><a href="#source-code">Source Code</a></li>
+<li><a href="#future-work">Future Work</a></li>
 <li><a href="#references">References</a></li>
 </ul>
 
@@ -165,6 +175,121 @@ from the simulation.</p>
 in multiple places.</p>
 
 <p><img src="https://raw.githubusercontent.com/iamprem/temp/master/assets/rrtstar_nonholo.png" alt="RRT Star Non Holonomic"></p>
+
+<h2>
+<a id="execution-instruction" class="anchor" href="#execution-instruction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Execution Instruction</h2>
+
+<h3>
+<a id="dependencies" class="anchor" href="#dependencies" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Dependencies</h3>
+
+<ul>
+<li>Python 2.7</li>
+<li><a href="http://www.pygame.org/wiki/CompileUbuntu">Pygame</a></li>
+<li>Numpy</li>
+<li>Ubuntu 14.04 or 15.10</li>
+</ul>
+
+<h4>
+<a id="to-install-numpy-and-pygame-on-ubuntu" class="anchor" href="#to-install-numpy-and-pygame-on-ubuntu" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>To Install Numpy and Pygame on Ubuntu</h4>
+
+<div class="highlight highlight-source-shell"><pre> sudo apt-get install pip            <span class="pl-c"># Install pip(python package manager)</span>
+ sudo pip install -U numpy           <span class="pl-c"># Install Numpy using pip</span>
+ sudo apt-get install python-pygame  <span class="pl-c"># Install Pygame using Ubuntu package manager</span></pre></div>
+
+<p><strong><em>Note: This program can also be run on Windows and Mac with appropriate pygame <a href="http://www.pygame.org/download.shtml">installation</a></em></strong></p>
+
+<h3>
+<a id="creating-and-loading-scene" class="anchor" href="#creating-and-loading-scene" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Creating and Loading Scene</h3>
+
+<p>To create scene(2D-environment with obstacles), run the below command from terminal/command prompt.</p>
+
+<div class="highlight highlight-source-shell"><pre> <span class="pl-c1">cd</span> rmp                              <span class="pl-c"># Navigate inside the project folder</span>
+ python scene.py                     <span class="pl-c"># Run scene definer</span></pre></div>
+
+<p>In the Screen resulted by running the above command, you can draw shapes by doing any of the following.</p>
+
+<ol>
+<li>Click and Drag to draw rectangles (like in MS Paint)</li>
+<li>Or Just <strong>click on 3 or more places</strong> on the screen to capture co-ordinates of the polygon and once done press <strong>ENTER</strong> to 
+see the polygonal shape(Make sure that you don't drag the mouse while clicking).</li>
+</ol>
+
+<p>Once obstacles are defined, Close the window to save the scene to 'scene_01.pkl' file(will be located on the project root directory) </p>
+
+<h3>
+<a id="running-path-planning-methods" class="anchor" href="#running-path-planning-methods" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Running Path Planning Methods</h3>
+
+<p>Use <code>playground.py</code> located in project root to test the program.</p>
+
+<h4>
+<a id="to-define-initial-and-goal-configurations" class="anchor" href="#to-define-initial-and-goal-configurations" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>To Define Initial and Goal configurations</h4>
+
+<p>Change the <code>q_init</code> and <code>q_goal</code> at line 11 and 12 on playground.py. <code>x,y and theta</code> should be in the range <code>(0-800), (0-800)
+ and (-3.14, 3.14)</code> respectively.</p>
+
+<div class="highlight highlight-source-python"><pre> playground.py : Line <span class="pl-c1">11</span><span class="pl-k">-</span><span class="pl-c1">12</span>
+
+    q_init <span class="pl-k">=</span> (<span class="pl-c1">100.0</span>, <span class="pl-c1">500.0</span>, <span class="pl-c1">0.0</span>)
+    q_goal <span class="pl-k">=</span> (<span class="pl-c1">700.0</span>, <span class="pl-c1">500.0</span>, <span class="pl-k">-</span><span class="pl-c1">2.15</span>)</pre></div>
+
+<h4>
+<a id="choose-algorithm" class="anchor" href="#choose-algorithm" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Choose Algorithm</h4>
+
+<p>Uncomment any one line and change parameters to run the required algorithm.</p>
+
+<div class="highlight highlight-source-python"><pre>playground.py : Line <span class="pl-c1">27</span><span class="pl-k">-</span><span class="pl-c1">31</span>
+
+   <span class="pl-c"># Call algorithm</span>
+   <span class="pl-c"># rrt_tree = planner.build_rrt(10000, epsilon=5)</span>
+   <span class="pl-c"># rrt_tree = planner.build_rrtstar(K=10000, epsilon=5)</span>
+   <span class="pl-c"># rrt_tree = planner.nh_build_rrt(K=1000, epsilon=40)</span>
+   <span class="pl-c"># rrt_tree = planner.nh_build_rrtstar(K=1000, epsilon=40)</span></pre></div>
+
+<p><strong><em>Warning: Non-Holonomic cases with K &gt; 1000 might take longer time to produce result because of inefficient graph
+plotting</em></strong></p>
+
+<p>Once you uncommented the algorithm in this step, uncomment/comment the required plotting line to see the result.</p>
+
+<h4>
+<a id="holonomic-plot" class="anchor" href="#holonomic-plot" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Holonomic Plot</h4>
+
+<p>For Holonomic cases, Uncomment the below lines and comment the Lines (51-57) shown in the next step(Non-Holonomic Plot)</p>
+
+<div class="highlight highlight-source-python"><pre>playground.py : Line <span class="pl-c1">45</span><span class="pl-k">-</span><span class="pl-c1">47</span>
+
+   <span class="pl-c"># q_goal_vtx = planner.reach_goal(rrt_tree, q_goal)</span>
+   <span class="pl-c"># vizer.plot_graph(rrt_tree, q_init)</span>
+   <span class="pl-c"># vizer.trace_path(q_goal_vtx)</span></pre></div>
+
+<h4>
+<a id="non-holonomic-plot" class="anchor" href="#non-holonomic-plot" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Non-Holonomic Plot</h4>
+
+<p>For Non-Holonomic Case, comment the three lines (45-47) and uncomment lines (51-57)</p>
+
+<div class="highlight highlight-source-python"><pre>playground.py : Lines <span class="pl-c1">51</span><span class="pl-k">-</span><span class="pl-c1">57</span>
+
+   vizer.nh_plot_graph(rrt_tree, q_init)
+   vizer.nh_trace_path(rrt_tree.getVertex(q_nearest))
+
+   a,b,c,d <span class="pl-k">=</span> planner.nh_reach_goal(q_nearest, q_goal)
+   final_list <span class="pl-k">=</span> planner.append_t1_m_t2(a, b, c)
+   <span class="pl-c"># <span class="pl-k">TODO</span> final_list collision check</span>
+   vizer.plot_points(final_list, vizer.<span class="pl-c1">YELLOW</span>, <span class="pl-c1">3</span>)</pre></div>
+
+<h4>
+<a id="start-and-stop" class="anchor" href="#start-and-stop" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Start and Stop</h4>
+
+<p>After selecting the appropriate lines from the above steps, </p>
+
+<ul>
+<li>run <strong><em><code>python playground.py</code></em></strong> to start the program.</li>
+<li>Close the window to exit the program once done(Or Press CTRL + C on console to break)</li>
+</ul>
+
+<h2>
+<a id="source-code" class="anchor" href="#source-code" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Source Code</h2>
+
+<p><a href="http://github.com/iamprem/rmp">On Github</a></p>
 
 <h2>
 <a id="future-work" class="anchor" href="#future-work" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Future Work</h2>
